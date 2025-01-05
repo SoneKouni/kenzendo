@@ -1,5 +1,5 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function Page() {
-  return <h1>Hello, Next.js!</h1>
+  return <h1>健全度調査!</h1>;
 }
