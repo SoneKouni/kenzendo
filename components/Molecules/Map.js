@@ -24,17 +24,38 @@ function Map({ bridgedata, trafficLayerVisible }) {
     setSelectedBridge(bridge);
   };
 
+  const validateAndConvertPosition = (bridge) => {
+    const { Id, Lat, Lng } = bridge;
+    // `Lat` と `Lng` を数値に変換
+    const lat = typeof Lat === "string" ? parseFloat(Lat) : Lat;
+    const lng = typeof Lng === "string" ? parseFloat(Lng) : Lng;
+
+    // 変換結果を検証
+    if (isNaN(lat) || isNaN(lng)) {
+      console.error(`Invalid position for bridge Id: ${Id}`, {
+        Lat,
+        Lng,
+      });
+      return null;
+    }
+
+    return { lat, lng };
+  };
+
   return (
     <LoadScript googleMapsApiKey={APIKey}>
       <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={9}>
         {trafficLayerVisible && <TrafficLayer />}
-        {bridgedata?.map((bridge) => (
-          <MarkerF
-            key={bridge.ID}
-            position={{ lat: bridge.Lat, lng: bridge.Lng }}
-            onClick={() => handleMarkerClick(bridge)}
-          />
-        ))}
+        {bridgedata?.map((bridge) => {
+          const position = validateAndConvertPosition(bridge);
+          return position ? (
+            <MarkerF
+              key={bridge.Id}
+              position={position}
+              onClick={() => handleMarkerClick(bridge)}
+            />
+          ) : null; // 無効なデータはスキップ
+        })}
         {selectedBridge && (
           <InfoWindowContent
             selected={selectedBridge}
