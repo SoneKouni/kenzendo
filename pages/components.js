@@ -3,6 +3,7 @@ import CheckBox from "../components/Atoms/CheckBox";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from "react";
 import Map from "../components/Molecules/Map";
+import SearchBox from "../components/Atoms/SearchBox";
 
 function Components() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -25,6 +26,10 @@ function Components() {
     }
   };
 
+  const handleSearch = (query) => {
+    console.log("検索ワード:", query);
+  };
+
   return (
     <>
       <div className="container mt-5">
@@ -34,6 +39,10 @@ function Components() {
           onClick={handleClick}
           disabled={isProcessing}
         />
+      </div>
+      <div className="container mt-5">
+        <h2>CheckBox Example</h2>
+        <SearchBox onSearch={handleSearch} />
       </div>
       <div className="container mt-5">
         <h2>CheckBox Example</h2>
