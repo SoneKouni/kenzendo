@@ -44,7 +44,7 @@ function Map({ bridgedata, trafficLayerVisible }) {
 
   return (
     <LoadScript googleMapsApiKey={APIKey}>
-      <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={9}>
+      <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={10}>
         {trafficLayerVisible && <TrafficLayer />}
         {bridgedata?.map((bridge) => {
           const position = validateAndConvertPosition(bridge);

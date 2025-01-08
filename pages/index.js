@@ -3,11 +3,13 @@ import { useState, useEffect } from "react";
 import SearchBox from "../components/Atoms/SearchBox";
 import CheckBox from "../components/Atoms/CheckBox";
 import Map from "../components/Molecules/Map";
+import RankButtons from "../components/Organisms/RankButtons";
 
 export default function Page() {
-  const [isChecked, setIsChecked] = useState(false);
+  const [isChecked, setIsChecked] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [bridgedata, setBridgedata] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -16,7 +18,22 @@ export default function Page() {
           "https://k-lab2.herokuapp.com/getopendata?ApiKey=9ea168d0f0b3459fa23a833b80739b2e"
         );
         const data = await response.json();
-        setBridgedata(data);
+
+        // Lat と Lng を数値型に変換
+        const convertedData = data.map((bridge) => ({
+          ...bridge,
+          Lat:
+            typeof bridge.Lat === "string"
+              ? parseFloat(bridge.Lat)
+              : bridge.Lat,
+          Lng:
+            typeof bridge.Lng === "string"
+              ? parseFloat(bridge.Lng)
+              : bridge.Lng,
+        }));
+
+        setBridgedata(convertedData);
+        setFilteredData(convertedData); // 初期データをフィルタリングデータとして設定
       } catch (error) {
         console.error("データの取得に失敗しました", error);
       }
@@ -34,16 +51,22 @@ export default function Page() {
     console.log("検索ワード:", query);
   };
 
+  const handleRankButtonClick = (column, value) => {
+    const filtered = bridgedata.filter((item) => item[column].includes(value));
+    setFilteredData(filtered);
+  };
+
   return (
     <div className="container mt-5">
       <h1>健全度調査!</h1>
       <SearchBox onSearch={handleSearch} />
+      <RankButtons handleRankButtonClick={handleRankButtonClick} />
       <CheckBox
         label="トラフィックレイヤーを表示"
         checked={isChecked}
         onChange={handleCheckboxChange}
       />
-      <Map bridgedata={bridgedata} trafficLayerVisible={isChecked} />
+      <Map bridgedata={filteredData} trafficLayerVisible={isChecked} />
     </div>
   );
 }
