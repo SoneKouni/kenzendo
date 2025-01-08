@@ -47,8 +47,12 @@ export default function Page() {
   };
 
   const handleSearch = (query) => {
-    setSearchQuery(query);
-    console.log("検索ワード:", query);
+    // 検索ワードに一致するデータを絞り込む
+    const filtered = bridgedata.filter((item) => item.Name.includes(query));
+    setFilteredData(filtered);
+    if (filtered.length === 0) {
+      alert("該当するデータがありません");
+    }
   };
 
   const handleRankButtonClick = (column, value) => {
