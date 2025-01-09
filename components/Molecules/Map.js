@@ -19,9 +19,14 @@ function Map({ bridgedata, trafficLayerVisible }) {
     lng: 131.575, // 山口の経度
   };
   const [selectedBridge, setSelectedBridge] = useState(null);
+  const [map, setMap] = useState(null);
 
   const handleMarkerClick = (bridge) => {
     setSelectedBridge(bridge);
+    if (map) {
+      map.panTo({ lat: bridge.Lat, lng: bridge.Lng });
+      map.setZoom(15);
+    }
   };
 
   const validateAndConvertPosition = (bridge) => {
@@ -48,6 +53,7 @@ function Map({ bridgedata, trafficLayerVisible }) {
         mapContainerStyle={containerStyle}
         center={center}
         zoom={10}
+        onLoad={(mapInstance) => setMap(mapInstance)}
         options={{
           disableDefaultUI: true,
           gestureHandling: "cooperative",
