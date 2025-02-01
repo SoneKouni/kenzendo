@@ -1,26 +1,29 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState, useEffect } from "react";
-import SearchBox from "../components/Atoms/SearchBox";
-import CheckBox from "../components/Atoms/CheckBox";
 import Map from "../components/Molecules/Map";
-import RankButtons from "../components/Organisms/RankButtons";
+import Tab from "../components/Atoms/Tab";
+import CheckBox from "../components/Atoms/CheckBox";
 
 export default function Page() {
   const [isChecked, setIsChecked] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
   const [bridgedata, setBridgedata] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+
+  const apiKeys = [
+    "9ea168d0f0b3459fa23a833b80739b2e",
+    "80ca870510214227aaf746140de01235"
+  ];
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          "https://k-lab2.herokuapp.com/getopendata?ApiKey=9ea168d0f0b3459fa23a833b80739b2e"
-        );
-        const data = await response.json();
+        const responses = await Promise.all(apiKeys.map(apiKey =>
+          fetch(`https://k-lab2.herokuapp.com/getopendata?ApiKey=${apiKey}`)
+        ));
+        const data = await Promise.all(responses.map(response => response.json()));
 
-        // Lat と Lng を数値型に変換
-        const convertedData = data.map((bridge) => ({
+        // データを結合し、Lat と Lng を数値型に変換
+        const combinedData = data.flat().map((bridge) => ({
           ...bridge,
           Lat:
             typeof bridge.Lat === "string"
@@ -31,9 +34,8 @@ export default function Page() {
               ? parseFloat(bridge.Lng)
               : bridge.Lng,
         }));
-
-        setBridgedata(convertedData);
-        setFilteredData(convertedData); // 初期データをフィルタリングデータとして設定
+        setBridgedata(combinedData);
+        setFilteredData(combinedData); // 初期値として全データを設定
       } catch (error) {
         console.error("データの取得に失敗しました", error);
       }
@@ -42,35 +44,34 @@ export default function Page() {
     fetchData();
   }, []);
 
-  const handleCheckboxChange = (e) => {
-    setIsChecked(e.target.checked);
+  const handleCheckboxChange = () => {
+    setIsChecked(!isChecked);
   };
 
-  const handleSearch = (query) => {
-    // 検索ワードに一致するデータを絞り込む
-    const filtered = bridgedata.filter((item) => item.Name.includes(query));
-    setFilteredData(filtered);
-    if (filtered.length === 0) {
-      alert("該当するデータがありません");
-    }
-  };
-
-  const handleRankButtonClick = (column, value) => {
-    const filtered = bridgedata.filter((item) => item[column].includes(value));
-    setFilteredData(filtered);
-  };
+  const tabs = [
+    {
+      label: "橋梁健全度調査",
+      content: (
+        <Map bridgedata={filteredData} trafficLayerVisible={isChecked} />
+      ),
+    },
+    {
+      label: "トンネル健全度調査",
+      content: (
+        <Map bridgedata={filteredData} trafficLayerVisible={isChecked} />
+      ),
+    },
+  ];
 
   return (
     <div className="container mt-5">
-      <h1>健全度調査!</h1>
-      <SearchBox onSearch={handleSearch} />
-      <RankButtons handleRankButtonClick={handleRankButtonClick} />
+      <h1>健全度調査</h1>
+      <Tab tabs={tabs} />
       <CheckBox
         label="トラフィックレイヤーを表示"
         checked={isChecked}
         onChange={handleCheckboxChange}
       />
-      <Map bridgedata={filteredData} trafficLayerVisible={isChecked} />
     </div>
   );
 }

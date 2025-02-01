@@ -1,22 +1,21 @@
 import React from 'react';
-import { InfoWindow } from '@react-google-maps/api';
 
-const InfoWindowContent = ({ selected, onClose }) => {
+const InfoWindowContent = ({ bridge }) => {
+  const infoWindowStyle = {
+    maxWidth: '200px',
+    padding: '10px',
+    margin: '0',
+  };
+
   return (
-    <InfoWindow
-      position={{
-        lat: parseFloat(selected.Lat),
-        lng: parseFloat(selected.Lng),
-      }}
-      onCloseClick={onClose}
-    >
-      <div>
-        <h3 style={{ textAlign: 'center' }}>{selected.Name}</h3>
-        <div style={{ textAlign: 'left' }}>
-          <p>Rank: {selected.Rank}</p>
-        </div>
-      </div>
-    </InfoWindow>
+    <div style={infoWindowStyle}>
+      <h2 style={{ fontSize: '16px', margin: '0 0 10px 0' }}>{bridge.Name}</h2>
+      <p style={{ margin: '0 0 5px 0' }}>ID： {bridge.Id}</p>
+      <p style={{ margin: '0 0 5px 0' }}>事務所： {bridge.Office}</p>
+      <p style={{ margin: '0 0 5px 0' }}>TEL： {bridge.Tel}</p>
+      <p style={{ margin: '0 0 5px 0' }}>架設年： {bridge.Year + "年"}</p>
+      <p style={{ margin: '0 0 5px 0' }}>健全度： {bridge.Rank}</p>
+    </div>
   );
 };
 
