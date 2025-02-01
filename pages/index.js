@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Map from "../components/Molecules/Map";
 import Tab from "../components/Atoms/Tab";
 import CheckBox from "../components/Atoms/CheckBox";
+import RankButtons from "../components/Organisms/RankButtons";
 
 export default function Page() {
   const [isChecked, setIsChecked] = useState(true);
@@ -84,13 +85,35 @@ export default function Page() {
     {
       label: "橋梁健全度調査",
       content: (
-        <Map bridgedata={filteredData} tunneldata={[]} trafficLayerVisible={isChecked} />
+        <>
+          <CheckBox
+            label="トラフィックレイヤーを表示"
+            checked={isChecked}
+            onChange={handleCheckboxChange}
+          />
+          <RankButtons
+            bridgedata={bridgedata}
+            setFilteredData={setFilteredData}
+          />
+          <Map bridgedata={filteredData} tunneldata={[]} trafficLayerVisible={isChecked} />
+        </>
       ),
     },
     {
       label: "トンネル健全度調査",
       content: (
-        <Map bridgedata={[]} tunneldata={filteredTunnelData} trafficLayerVisible={isChecked} />
+        <>
+          <CheckBox
+            label="トラフィックレイヤーを表示"
+            checked={isChecked}
+            onChange={handleCheckboxChange}
+          />
+          <RankButtons
+            bridgedata={bridgedata}
+            setFilteredData={setFilteredData}
+          />
+          <Map bridgedata={[]} tunneldata={filteredTunnelData} trafficLayerVisible={isChecked} />
+        </>
       ),
     },
   ];
@@ -99,16 +122,6 @@ export default function Page() {
     <div className="container mt-5">
       <h1>健全度調査</h1>
       <Tab tabs={tabs} />
-      <CheckBox
-        label="トラフィックレイヤーを表示"
-        checked={isChecked}
-        onChange={handleCheckboxChange}
-      />
-      <div>
-        <h2>API Keys</h2>
-        <p>橋梁データ API Keys: {bridgeApiKeys.join(", ")}</p>
-        <p>トンネルデータ API Keys: {tunnelApiKeys.join(", ")}</p>
-      </div>
     </div>
   );
 }
