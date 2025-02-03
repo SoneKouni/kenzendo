@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { GoogleMap, LoadScript, DirectionsRenderer, MarkerF, InfoWindow, TrafficLayer } from "@react-google-maps/api";
+import { GoogleMap, LoadScript, MarkerF, InfoWindow, TrafficLayer } from "@react-google-maps/api";
 import InfoWindowContent from "../Atoms/InfoWindowContent";
-import InfoWindowContentT from "../Atoms/infoWindowContentT";
+import InfoWindowContentT from "../Atoms/InfoWindowContentT";
 
 const containerStyle = {
   width: "100%",
@@ -16,10 +16,9 @@ function Map({ bridgedata, tunneldata, trafficLayerVisible }) {
   };
   const [selectedBridge, setSelectedBridge] = useState(null);
   const [selectedTunnel, setSelectedTunnel] = useState(null);
+  const [inspectedBridges, setInspectedBridges] = useState([]);
+  const [inspectedTunnels, setInspectedTunnels] = useState([]);
   const [map, setMap] = useState(null);
-  const [pointA, setPointA] = useState('');
-  const [pointB, setPointB] = useState('');
-  const [directions, setDirections] = useState(null);
 
   const handleMarkerClick = (item, type) => {
     if (type === "bridge") {
@@ -29,9 +28,21 @@ function Map({ bridgedata, tunneldata, trafficLayerVisible }) {
       setSelectedTunnel(item);
       setSelectedBridge(null);
     }
-    if (map) {
-      map.panTo({ lat: item.Lat, lng: item.Lng });
-      map.setZoom(15);
+  };
+
+  const handleInspect = (id, type) => {
+    if (type === "bridge") {
+      setInspectedBridges([...inspectedBridges, id]);
+    } else if (type === "tunnel") {
+      setInspectedTunnels([...inspectedTunnels, id]);
+    }
+  };
+
+  const handleCancel = (id, type) => {
+    if (type === "bridge") {
+      setInspectedBridges(inspectedBridges.filter(bridgeId => bridgeId !== id));
+    } else if (type === "tunnel") {
+      setInspectedTunnels(inspectedTunnels.filter(tunnelId => tunnelId !== id));
     }
   };
 
@@ -41,43 +52,8 @@ function Map({ bridgedata, tunneldata, trafficLayerVisible }) {
     return isNaN(lat) || isNaN(lng) ? null : { lat, lng };
   };
 
-  const handleSearch = () => {
-    if (pointA && pointB) {
-      const directionsService = new window.google.maps.DirectionsService();
-      directionsService.route(
-        {
-          origin: pointA,
-          destination: pointB,
-          travelMode: window.google.maps.TravelMode.DRIVING,
-        },
-        (result, status) => {
-          if (status === window.google.maps.DirectionsStatus.OK) {
-            setDirections(result);
-          } else {
-            console.error(`error fetching directions ${result}`);
-          }
-        }
-      );
-    }
-  };
-
   return (
     <LoadScript googleMapsApiKey={APIKey}>
-      <div>
-        <input
-          type="text"
-          placeholder="地点Aを入力"
-          value={pointA}
-          onChange={(e) => setPointA(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="地点Bを入力"
-          value={pointB}
-          onChange={(e) => setPointB(e.target.value)}
-        />
-        <button onClick={handleSearch}>検索</button>
-      </div>
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}
@@ -89,43 +65,50 @@ function Map({ bridgedata, tunneldata, trafficLayerVisible }) {
         }}
       >
         {trafficLayerVisible && <TrafficLayer />}
-        {!directions && bridgedata?.map((bridge) => {
+        {bridgedata?.map((bridge) => {
           const position = validateAndConvertPosition(bridge);
+          const icon = inspectedBridges.includes(bridge.Id)
+            ? "http://maps.google.com/mapfiles/ms/icons/green-dot.png"
+            : "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
           return position ? (
             <MarkerF
               key={bridge.Id}
               position={position}
+              icon={icon}
               onClick={() => handleMarkerClick(bridge, "bridge")}
             />
           ) : null;
         })}
-        {!directions && tunneldata?.map((tunnel) => {
+        {tunneldata?.map((tunnel) => {
           const position = validateAndConvertPosition(tunnel);
+          const icon = inspectedTunnels.includes(tunnel.Id)
+            ? "http://maps.google.com/mapfiles/ms/icons/green-dot.png"
+            : "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
           return position ? (
             <MarkerF
               key={tunnel.Id}
               position={position}
+              icon={icon}
               onClick={() => handleMarkerClick(tunnel, "tunnel")}
             />
           ) : null;
         })}
-        {selectedBridge && !directions && (
+        {selectedBridge && (
           <InfoWindow
             position={{ lat: selectedBridge.Lat, lng: selectedBridge.Lng }}
             onCloseClick={() => setSelectedBridge(null)}
           >
-            <InfoWindowContent bridge={selectedBridge} />
+            <InfoWindowContent bridge={selectedBridge} onInspect={(id) => handleInspect(id, "bridge")} onCancel={(id) => handleCancel(id, "bridge")} />
           </InfoWindow>
         )}
-        {selectedTunnel && !directions && (
+        {selectedTunnel && (
           <InfoWindow
             position={{ lat: selectedTunnel.Lat, lng: selectedTunnel.Lng }}
             onCloseClick={() => setSelectedTunnel(null)}
           >
-            <InfoWindowContentT tunnel={selectedTunnel} />
+            <InfoWindowContentT tunnel={selectedTunnel} onInspect={(id) => handleInspect(id, "tunnel")} onCancel={(id) => handleCancel(id, "tunnel")} />
           </InfoWindow>
         )}
-        {directions && <DirectionsRenderer directions={directions} />}
       </GoogleMap>
     </LoadScript>
   );
