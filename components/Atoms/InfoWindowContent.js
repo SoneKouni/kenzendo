@@ -1,5 +1,3 @@
-import React from 'react';
-
 const InfoWindowContent = ({ bridge }) => {
   const infoWindowStyle = {
     maxWidth: '200px',
@@ -13,7 +11,7 @@ const InfoWindowContent = ({ bridge }) => {
       <p style={{ margin: '0 0 5px 0' }}>ID： {bridge.Id}</p>
       <p style={{ margin: '0 0 5px 0' }}>事務所： {bridge.Office}</p>
       <p style={{ margin: '0 0 5px 0' }}>TEL： {bridge.Tel}</p>
-      <p style={{ margin: '0 0 5px 0' }}>架設年： {bridge.Year + "年"}</p>
+      {bridge.Year != null && <p style={{ margin: '0 0 5px 0' }}>架設年： {bridge.Year + "年"}</p>}
       <p style={{ margin: '0 0 5px 0' }}>健全度： {bridge.Rank}</p>
     </div>
   );

@@ -1,20 +1,20 @@
 import React, { useState } from "react";
 import Button from "./Button";
 
-const SearchBox = ({ onSearch, disabled }) => {
+const SearchBoxT = ({ onSearch, disabled }) => {
   const [query, setQuery] = useState("");
 
   const handleInputChange = (e) => {
     setQuery(e.target.value);
   };
 
-  const handleSearch = () => {
+  const handleSearchT = () => {
     onSearch(query);
   };
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      handleSearch();
+      handleSearchT();
     }
   };
 
@@ -28,9 +28,9 @@ const SearchBox = ({ onSearch, disabled }) => {
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
       />
-      <Button text="検索" onClick={handleSearch} disabled={disabled} />
+      <Button text="検索" onClick={handleSearchT} disabled={disabled} />
     </div>
   );
 };
 
-export default SearchBox;
+export default SearchBoxT;

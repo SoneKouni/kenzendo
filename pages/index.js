@@ -4,6 +4,9 @@ import Map from "../components/Molecules/Map";
 import Tab from "../components/Atoms/Tab";
 import CheckBox from "../components/Atoms/CheckBox";
 import RankButtons from "../components/Organisms/RankButtons";
+import RankButtonsT from "../components/Organisms/RankButtonsT";
+import SearchBox from "../components/Atoms/SearchBox";
+import SearchBoxT from "../components/Atoms/SearchBoxT";
 
 export default function Page() {
   const [isChecked, setIsChecked] = useState(true);
@@ -81,6 +84,30 @@ export default function Page() {
     setIsChecked(!isChecked);
   };
 
+  const handleRankButtonClick = (selectedRanks) => {
+    const filteredBridges = bridgedata.filter((bridge) =>
+      selectedRanks.includes(bridge.Rank)
+    );
+    setFilteredData(filteredBridges);
+  };
+
+  const handleRankButtonClickT = (selectedRanks) => {
+    const filteredTunnels = tunneldata.filter((tunnel) =>
+      selectedRanks.includes(tunnel.Rank)
+    );
+    setFilteredTunnelData(filteredTunnels);
+  };
+
+  const handleSearch = (query) => {
+    const filteredBridges = bridgedata.filter((bridge) => bridge.Name.includes(query));
+    setFilteredData(filteredBridges);
+  };
+
+  const handleSearchT = (query) => {
+    const filteredTunnels = tunneldata.filter((tunnel) => tunnel.Name.includes(query));
+    setFilteredTunnelData(filteredTunnels);
+  };
+
   const tabs = [
     {
       label: "橋梁健全度調査",
@@ -92,9 +119,9 @@ export default function Page() {
             onChange={handleCheckboxChange}
           />
           <RankButtons
-            bridgedata={bridgedata}
-            setFilteredData={setFilteredData}
+            handleRankButtonClick={handleRankButtonClick}
           />
+          <SearchBox onSearch={handleSearch} />
           <Map bridgedata={filteredData} tunneldata={[]} trafficLayerVisible={isChecked} />
         </>
       ),
@@ -108,10 +135,10 @@ export default function Page() {
             checked={isChecked}
             onChange={handleCheckboxChange}
           />
-          <RankButtons
-            bridgedata={bridgedata}
-            setFilteredData={setFilteredData}
+          <RankButtonsT
+            handleRankButtonClick={handleRankButtonClickT}
           />
+          <SearchBoxT onSearch={handleSearchT} />
           <Map bridgedata={[]} tunneldata={filteredTunnelData} trafficLayerVisible={isChecked} />
         </>
       ),

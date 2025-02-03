@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { GoogleMap, LoadScript, DirectionsRenderer, MarkerF, InfoWindow, TrafficLayer } from "@react-google-maps/api";
 import InfoWindowContent from "../Atoms/InfoWindowContent";
+import InfoWindowContentT from "../Atoms/infoWindowContentT";
 
 const containerStyle = {
   width: "100%",
-  height: "80vh",
+  height: "75vh",
 };
 
 function Map({ bridgedata, tunneldata, trafficLayerVisible }) {
@@ -121,7 +122,7 @@ function Map({ bridgedata, tunneldata, trafficLayerVisible }) {
             position={{ lat: selectedTunnel.Lat, lng: selectedTunnel.Lng }}
             onCloseClick={() => setSelectedTunnel(null)}
           >
-            <InfoWindowContent tunnel={selectedTunnel} />
+            <InfoWindowContentT tunnel={selectedTunnel} />
           </InfoWindow>
         )}
         {directions && <DirectionsRenderer directions={directions} />}

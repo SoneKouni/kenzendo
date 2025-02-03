@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const RankButtons = ({ handleRankButtonClick }) => {
+const RankButtonsT = ({ handleRankButtonClick }) => {
   const ranks = ["Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ"];
   const [selectedRanks, setSelectedRanks] = useState([]);
 
@@ -30,4 +30,4 @@ const RankButtons = ({ handleRankButtonClick }) => {
   );
 };
 
-export default RankButtons;
+export default RankButtonsT;
